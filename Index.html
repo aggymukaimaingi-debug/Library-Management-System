@@ -1,0 +1,996 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Library Management System</title>
+
+    <meta name="description"
+          content="A modern library management website for discovering books and exploring library services.">
+
+    <style>
+        /* GENERAL STYLING */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #163b65;
+            --secondary: #2463a6;
+            --accent: #f4b942;
+            --light: #f4f7fb;
+            --white: #ffffff;
+            --dark: #243247;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16805d;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1150px, 92%);
+            margin: auto;
+        }
+
+        /* TOP BAR */
+        .topbar {
+            background: #102b49;
+            color: white;
+            padding: 9px 0;
+            font-size: 13px;
+        }
+
+        .topbar .container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* NAVIGATION */
+        header {
+            background: white;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            min-height: 78px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--secondary);
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: white !important;
+            padding: 11px 17px;
+            border-radius: 7px;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background:
+                linear-gradient(110deg,
+                rgba(16, 43, 73, 0.97),
+                rgba(36, 99, 166, 0.86)),
+                url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1800&q=85")
+                center/cover;
+            color: white;
+            padding: 95px 0 85px;
+        }
+
+        .hero-content {
+            max-width: 720px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 7px 14px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px, 5vw, 55px);
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero p {
+            max-width: 610px;
+            color: #e5edf7;
+            font-size: 17px;
+            margin-bottom: 28px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            border: none;
+            border-radius: 7px;
+            padding: 13px 21px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #192a3d;
+        }
+
+        .btn-primary:hover {
+            background: #ffd16b;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 1px solid white;
+            color: white;
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* STATISTICS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: white;
+            border-radius: 12px;
+            padding: 28px 15px;
+            margin-top: -35px;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(20, 45, 75, 0.08);
+        }
+
+        .stat {
+            text-align: center;
+            padding: 8px;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat h2 {
+            color: var(--primary);
+            font-size: 29px;
+        }
+
+        .stat p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* SECTIONS */
+        section.content-section {
+            padding: 75px 0;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .section-heading .eyebrow {
+            color: var(--secondary);
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-heading h2 {
+            color: var(--primary);
+            font-size: clamp(27px, 4vw, 36px);
+            margin: 8px 0;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            max-width: 620px;
+            margin: auto;
+        }
+
+        /* SEARCH */
+        .search-panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-form input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        .search-form input:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(36, 99, 166, 0.12);
+        }
+
+        .search-form button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 7px;
+            padding: 12px 22px;
+            white-space: nowrap;
+        }
+
+        /* BOOK CARDS */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .book-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(20, 45, 75, 0.1);
+        }
+
+        .book-cover {
+            min-height: 175px;
+            display: grid;
+            place-items: center;
+            font-size: 60px;
+            color: white;
+        }
+
+        .cover-one {
+            background: linear-gradient(135deg, #163b65, #3674ae);
+        }
+
+        .cover-two {
+            background: linear-gradient(135deg, #9a5a2e, #e1a35d);
+        }
+
+        .cover-three {
+            background: linear-gradient(135deg, #286957, #6db69b);
+        }
+
+        .book-info {
+            padding: 22px;
+        }
+
+        .category {
+            display: inline-block;
+            background: #eaf2fc;
+            color: var(--secondary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .book-info h3 {
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .book-author {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .book-description {
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .book-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        .available {
+            color: var(--success);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .borrow-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 9px 12px;
+            font-size: 12px;
+        }
+
+        .borrow-btn:hover {
+            background: var(--secondary);
+        }
+
+        #noResults {
+            display: none;
+            text-align: center;
+            padding: 25px;
+            color: var(--muted);
+        }
+
+        /* SERVICES */
+        .services-section {
+            background: white;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .service-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            background: #fff;
+        }
+
+        .service-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 25px;
+            background: #eaf2fc;
+            margin-bottom: 17px;
+        }
+
+        .service-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .service-card p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* HOW IT WORKS */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .step-number {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 17px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .step h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* CALL TO ACTION */
+        .cta {
+            background: linear-gradient(120deg, #163b65, #2463a6);
+            color: white;
+            border-radius: 15px;
+            padding: 45px 30px;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .cta p {
+            color: #e5edf7;
+            margin-bottom: 22px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #102b49;
+            color: white;
+            padding: 45px 0 20px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 35px;
+            margin-bottom: 30px;
+        }
+
+        footer h3 {
+            margin-bottom: 15px;
+        }
+
+        footer p,
+        footer a {
+            color: #d3deeb;
+            font-size: 14px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 9px;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #d3deeb;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 25, 45, 0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            width: min(430px, 100%);
+            padding: 28px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .modal-box h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .modal-box p {
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .modal-box label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .modal-box button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            border: none;
+            background: none;
+            font-size: 25px;
+            color: var(--muted);
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 800px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 78px;
+                left: 0;
+                width: 100%;
+                background: white;
+                padding: 20px 4%;
+                flex-direction: column;
+                align-items: flex-start;
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .book-grid,
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat:nth-child(2) {
+                border-right: none;
+            }
+
+            .stat:nth-child(-n+2) {
+                border-bottom: 1px solid var(--border);
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-grid > div:first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .topbar .container {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .hero {
+                padding: 70px 0;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .book-grid,
+            .service-grid,
+            .steps-grid,
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid > div:first-child {
+                grid-column: auto;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-form button {
+                width: 100%;
+            }
+
+            .stats {
+                padding: 18px 8px;
+            }
+
+            .stat h2 {
+                font-size: 24px;
+            }
+
+            section.content-section {
+                padding: 55px 0;
+            }
+
+            .cta h2 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP INFORMATION BAR -->
+    <div class="topbar">
+        <div class="container">
+            <span>📚 Your knowledge, your future</span>
+            <span>Welcome to our Library Management System</span>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <header>
+        <nav class="navbar container" aria-label="Main navigation">
+
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📚</span>
+                <span>Library<span style="color:#2463a6;">Hub</span></span>
+            </a>
+
+            <button class="menu-toggle"
+                    id="menuToggle"
+                    aria-label="Open navigation menu"
+                    aria-expanded="false">☰</button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="#books">Books</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="contact.html" class="nav-button">Contact Us</a></li>
+            </ul>
+
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- HERO / HOME SECTION -->
+        <section class="hero" id="home">
+            <div class="container">
+                <div class="hero-content">
+
+                    <span class="badge">WELCOME TO LIBRARYHUB</span>
+
+                    <h1>
+                        Discover Knowledge.<br>
+                        <span>Explore New Worlds.</span>
+                    </h1>
+
+                    <p>
+                        Welcome to our Library Management System.
+                        Explore books, discover new ideas, and make learning
+                        part of your everyday life.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#books" class="btn btn-primary">
+                            Explore Our Books →
+                        </a>
+
+                        <a href="#services" class="btn btn-outline">
+                            Our Services
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- LIBRARY STATISTICS -->
+        <div class="container">
+            <div class="stats">
+
+                <div class="stat">
+                    <h2>1,200+</h2>
+                    <p>Books in Collection</p>
+                </div>
+
+                <div class="stat">
+                    <h2>350+</h2>
+                    <p>Registered Readers</p>
+                </div>
+
+                <div class="stat">
+                    <h2>25+</h2>
+                    <p>Book Categories</p>
+                </div>
+
+                <div class="stat">
+                    <h2>6 Days</h2>
+                    <p>Open Every Week</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BOOK SECTION -->
+        <section class="content-section" id="books">
+            <div class="container">
+
+                <div class="section-heading">
+                    <span class="eyebrow">OUR COLLECTION</span>
+                    <h2>Explore Our Books</h2>
+                    <p>
+                        Search our sample collection and discover books
+                        for education, technology, business, and personal growth.
+                    </p>
+                </div>
+
+                <!-- SEARCH FORM -->
+                <div class="search-panel">
+                    <form class="search-form" id="searchForm">
+                        <input
+                            type="search"
+                            id="bookSearch"
+                            placeholder="Search by book title, author, or category..."
+                            aria-label="Search books">
+
+                        <button type="submit">Search Books</button>
+                    </form>
+                </div>
+
+                <!-- BOOK LIST -->
+                <div class="book-grid" id="bookGrid">
+
+                    <article class="book-card"
+                             data-search="introduction to computer science technology education">
+
+                        <div class="book-cover cover-one" aria-hidden="true">
+                            💻
+                        </div>
+
+                        <div class="book-info">
+                            <span class="category">TECHNOLOGY</span>
+
+                            <h3>Introduction to Computer Science</h3>
+
+                            <p class="book-author">
+                                Author: Sample Author
+                            </p>
+
+                            <p class="book-description">
+                                An introductory example of a book covering
+                                computer fundamentals and information technology.
+                            </p>
+
+                            <div class="book-bottom">
+                                <span class="available">● Sample listing</span>
+
+                                <button class="borrow-btn"
+                                        data-title="Introduction to Computer Science">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+
+                    </article>
+
+                    <article class="book-card"
+                             data-search="business management entrepreneurship business">
+
+                        <div class="book-cover cover-two" aria-hidden="true">
+                            📈
+                        </div>
+
+                        <div class="book-info">
+                            <span class="category">BUSINESS</span>
+
+                            <h3>Principles of Business Management</h3>
+
+                            <p class="book-author">
+                                Author: Sample Author
+                            </p>
+
+                            <p class="book-description">
+                                An example of a business book covering
+                                management, planning, and entrepreneurship.
+                            </p>
+
+                            <div class="book-bottom">
+                                <span class="available">● Sample listing</span>
+
+                                <button class="borrow-btn"
+                                        data-title="Principles of Business Management">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+
+                    </article>
+
+                    <article class="book-card"
+                             data-search="web development html css javascript programming">
+
+                        <div class="book-cover cover-three" aria-hidden="true">
+                            🌐
+                        </div>
+
+                        <div class="book-info">
+                            <span class="category">PROGRAMMING</span>
+
+                            <h3>Fundamentals of Web Development</h3>
+
+                            <p class="book-author">
+                                Author: Sample Author
+                            </p>
+
+                            <p class="book-description">
+                                An example of a programming book introducing
+                                HTML, CSS, JavaScript, and web design.
+                            </p>
+
+                            <div class="book-bottom">
+                                <span class="available">● Sample listing</span>
+
+                                <button class="borrow-btn"
+                                        data-title="Fundamentals of Web Development">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <p id="noResults" role="status">
+                    No matching books were found. Try another search.
+                </p>
+
+            </div>
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section class="content-section services-section" id="services">
+            <div class="container">
+
+                <div class="section-heading">
+                    <span class="eyebrow">WHAT WE OFFER</span>
+                    <h2>Our Library Services</h2>
+                    <p>
+                        Our sample website highlights common services
+                        that a modern library can provide.
+                    </p>
+                </div>
+
+                <div class="service-grid">
+
+                    <article class="service-card">
+                        <div class="service-icon">📖</div>
+                        <h3>Book Discovery</h3>
+                        <p>
+                            Browse and search the sample book collection
+                            to find learning materials that interest you.
+                        </p>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">🎓</div>
+```
